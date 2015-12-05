@@ -1,2 +1,2 @@
 # txtnotes
-smal
+small notes in raw format to further processing/reviewing. 
