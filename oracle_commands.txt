@@ -1,0 +1,11 @@
+--view all the schemas 
+SELECT  * from dba_users;
+   
+   
+   
+--view all object
+SELECT  *  FROM all_objects ;
+
+
+--rownum in table:
+select count(*) from big_table;

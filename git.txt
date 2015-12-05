@@ -1,0 +1,21 @@
+git commands:
+
+git clone https://github.com/azubkov/test.git
+
+git config --list
+
+git status
+
+git ls-files
+
+
+git diff README.md
+
+git diff
+
+
+git log origin/master..HEAD
+
+git diff origin/master..HEAD
+
+
