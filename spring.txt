@@ -1888,6 +1888,577 @@ PlatformTransactionManager
 @Commit
 
 
+JdbcTestUtils,
+AbstractTransactionalJUnit4SpringContextTests
+AbstractTransactionalTestNGSpringContextTests 
+spring-jdbc 
+TestContext
+@ContextConfiguration
+
+@ContextConfiguration("/test-config.xml")
+public class XmlApplicationContextTests {
+// class body...
+}
+
+@ContextConfiguration(classes = TestConfig.class)
+public class ConfigClassApplicationContextTests {
+// class body...
+}
+
+@ContextConfiguration(initializers = CustomContextIntializer.class)
+public class ContextInitializerTests {
+// class body...
+}
+
+@ContextConfiguration(locations = "/test-context.xml", loader = CustomContextLoader.class)
+public class CustomLoaderXmlApplicationContextTests {
+// class body...
+}
+
+@WebAppConfiguration
+MockServletContext
+
+@ContextConfiguration
+@WebAppConfiguration("classpath:test-web-resources")
+public class WebAppTests {
+// class body...
+}
+@ContextHierarchy
+
+
+@ContextHierarchy({
+@ContextConfiguration("/parent-config.xml"),
+@ContextConfiguration("/child-config.xml")
+})
+public class ContextHierarchyTests {
+// class body...
+}
+
+
+
+@WebAppConfiguration
+@ContextHierarchy({
+@ContextConfiguration(classes = AppConfig.class),
+@ContextConfiguration(classes = WebConfig.class)
+})
+public class WebIntegrationTests {
+// class body...
+}
+
+@ActiveProfiles
+
+@ContextConfiguration
+@ActiveProfiles("dev")
+public class DeveloperTests {
+// class body...
+}
+
+@ContextConfiguration
+@ActiveProfiles({"dev", "integration"})
+public class DeveloperIntegrationTests {
+// class body...
+}
+ActiveProfilesResolver
+@TestPropertySource
+
+
+@ContextConfiguration
+@TestPropertySource("/test.properties")
+public class MyIntegrationTests {
+// class body...
+}
+
+@ContextConfiguration
+@TestPropertySource(properties = { "timezone = GMT", "port: 4242" })
+public class MyIntegrationTests {
+// class body...
+}
+
+@DirtiesContext
+
+@DirtiesContext(classMode = BEFORE_CLASS)
+public class FreshContextTests {
+// some tests that require a new Spring container
+}
+
+@DirtiesContext(classMode = BEFORE_EACH_TEST_METHOD)
+public class FreshContextTests {
+// some tests that require a new Spring container
+}
+AFTER_EACH_TEST_METHOD)
+AFTER_CLASS
+
+@DirtiesContext(methodMode = BEFORE_METHOD)
+@Test
+public void testProcessWhichRequiresFreshAppCtx() {
+// some logic that requires a new Spring container
+}
+AFTER_METHOD
+
+
+@ContextHierarchy({
+@ContextConfiguration("/parent-config.xml"),
+@ContextConfiguration("/child-config.xml")
+})
+public class BaseTests {
+// class body...
+}
+public class ExtendedTests extends BaseTests {
+}
+@Test
+@DirtiesContext(hierarchyMode = CURRENT_LEVEL)
+public void test() {
+// some logic that results in the child context being dirtied
+}
+DirtiesContext.HierarchyMode 
+
+@TestExecutionListeners
+TestContextManager.
+
+@ContextConfiguration
+@TestExecutionListeners({CustomTestExecutionListener.class, AnotherTestExecutionListener.class})
+public class CustomTestExecutionListenerTests {
+// class body...
+}
+
+
+public class BeforeClassHook extends AbstractTestExecutionListener {
+
+    public BeforeClassHook() { }
+
+    @Override
+    public void beforeTestClass(TestContext testContext) {
+        System.out.println("BeforeClassHook.beforeTestClass(): set up.");
+    }
+}
+
+
+@Commit
+@Rollback(false) 
+
+@BeforeTransaction
+@AfterTransaction
+
+@Sql
+@Test
+@Sql({"/test-schema.sql", "/test-user-data.sql"})
+public void userTest {
+// execute code that relies on the test schema and test data
+}
+
+@SqlConfig
+
+
+@Test
+@Sql(
+scripts = "/test-user-data.sql",
+config = @SqlConfig(commentPrefix = "`", separator = "@@")
+)
+public void userTest {
+// execute code that relies on the test data
+}
+@SqlGroup
+
+@Test
+@SqlGroup({
+@Sql(scripts = "/test-schema.sql", config = @SqlConfig(commentPrefix = "`")),
+@Sql("/test-user-data.sql")
+)}
+public void userTest {
+// execute code that uses the test schema and test data
+}
+
+
+• @Autowired
+• @Qualifier
+• @Resource (javax.annotation) if JSR-250 is present
+• @Inject (javax.inject) if JSR-330 is present
+• @Named (javax.inject) if JSR-330 is present
+• @PersistenceContext (javax.persistence) if JPA is present
+• @PersistenceUnit (javax.persistence) if JPA is present
+• @Required
+• @Transactional
+
+SpringJUnit4ClassRunner,
+@IfProfileValue
+ProfileValueSource
+
+@IfProfileValue(name="java.vendor", value="Oracle Corporation")
+@Test
+public void testProcessWhichRunsOnlyOnOracleJvm() {
+// some logic that should run only on Java VMs from Oracle Corporation
+}
+
+@IfProfileValue(name="test-groups", values={"unit-tests", "integration-tests"})
+@ProfileValueSourceConfiguration
+SystemProfileValueSource
+
+@ProfileValueSourceConfiguration(CustomProfileValueSource.class)
+public class CustomProfileValueSourceTests {
+// class body...
+}
+
+@Timed
+
+@Timed(millis=1000)
+public void testProcessWithOneSecondTimeout() {
+// some logic that should not take longer than 1 second to execute
+}
+
+JUnit’s @Test(timeout=...)
+
+
+@Repeat
+@Repeat(10)
+
+• @ContextConfiguration
+• @ContextHierarchy
+• @ActiveProfiles
+• @TestPropertySource
+• @DirtiesContext
+• @WebAppConfiguration
+• @TestExecutionListeners
+• @Transactional
+• @BeforeTransaction
+• @AfterTransaction
+• @Rollback
+• @Sql
+• @SqlConfig
+• @SqlGroup
+• @Repeat
+• @Timed
+• @IfProfileValue
+• @ProfileValueSourceConfiguration
+
+
+TestContext
+TestContextManager
+TestExecutionListener,
+ContextLoader,
+SmartContextLoader
+DelegatingSmartContextLoader:	
+AnnotationConfigContextLoader,
+GenericXmlContextLoader,
+GenericGroovyXmlContextLoader
+WebDelegatingSmartContextLoader:
+AnnotationConfigWebContextLoader,
+GenericXmlWebContextLoader,
+GenericGroovyXmlWebContextLoader
+GenericPropertiesContextLoade
+
+
+ServletTestExecutionListener:
+DependencyInjectionTestExecutionListener:
+DirtiesContextTestExecutionListener:
+TransactionalTestExecutionListener:
+SqlScriptsTestExecutionListener:
+SpringFactoriesLoader
+META-INF/spring.factories 
+AnnotationAwareOrderComparator
+
+
+
+
+@ContextConfiguration
+@TestExecutionListeners({
+  MyCustomTestExecutionListener.class,
+  ServletTestExecutionListener.class,
+  DependencyInjectionTestExecutionListener.class,
+  DirtiesContextTestExecutionListener.class,
+  TransactionalTestExecutionListener.class,
+  SqlScriptsTestExecutionListener.class
+})
+public class MyTest {
+// class body...
+}
+
+
+
+@ContextConfiguration
+@TestExecutionListeners(
+listeners = MyCustomTestExecutionListener.class,
+mergeMode = MERGE_WITH_DEFAULTS
+)
+public class MyTest {
+// class body...
+}
+
+AbstractJUnit4SpringContextTests
+AbstractTestNGSpringContextTests
+
+@RunWith(SpringJUnit4ClassRunner.class)
+// ApplicationContext will be loaded from "/app-config.xml" and
+// "/test-config.xml" in the root of the classpath
+@ContextConfiguration(locations={"/app-config.xml", "/test-config.xml"})
+public class MyTest {
+// class body...
+}
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration({"/app-config.xml", "/test-config.xml"})
+public class MyTest {
+// class body...
+}
+GenericXmlContextLoader
+GenericXmlWebContextLoader
+
+
+If your class is named com.example.MyTest,
+GenericXmlContextLoader loads your application context from "classpath:com/example/
+MyTest-context.xml".
+
+@RunWith(SpringJUnit4ClassRunner.class)
+// ApplicationContext will be loaded from
+// "classpath:com/example/MyTest-context.xml"
+@ContextConfiguration
+public class MyTest {
+// class body...
+}
+
+
+
+
+@RunWith(SpringJUnit4ClassRunner.class)
+// ApplicationContext will be loaded from "/AppConfig.groovy" and
+// "/TestConfig.groovy" in the root of the classpath
+@ContextConfiguration({"/AppConfig.groovy", "/TestConfig.Groovy"})
+public class MyTest {
+// class body...
+}
+
+
+GenericGroovyXmlContextLoader
+GenericGroovyXmlWebContextLoader
+
+
+package com.example;
+@RunWith(SpringJUnit4ClassRunner.class)
+// ApplicationContext will be loaded from
+// "classpath:com/example/MyTestContext.groovy"
+@ContextConfiguration
+public class MyTest {
+// class body...
+}
+
+
+AnnotationConfigContextLoader
+AnnotationConfigWebContextLoader
+
+
+AnnotationConfigContextLoader and AnnotationConfigWebContextLoader will detect all
+static nested classes of the test class that meet the requirements for configuration class
+implementations as specified in the @Configuration javadocs.
+
+
+
+@RunWith(SpringJUnit4ClassRunner.class)
+// ApplicationContext will be loaded from the
+// static nested Config class
+@ContextConfiguration
+public class OrderServiceTest {
+@Configuration
+static class Config {
+}
+// this bean will be injected into the OrderServiceTest class
+@Bean
+public OrderService orderService() {
+OrderService orderService = new OrderServiceImpl();
+// set properties, etc.
+return orderService;
+}
+@Autowired
+private OrderService orderService;
+@Test
+public void testOrderService() {
+// test the orderService
+}
+}
+
+
+ApplicationContextInitializer.
+
+@RunWith(SpringJUnit4ClassRunner.class)
+// ApplicationContext will be loaded from TestConfig
+// and initialized by TestAppCtxInitializer
+@ContextConfiguration(
+classes = TestConfig.class,
+initializers = TestAppCtxInitializer.class)
+public class MyTest {
+// class body...
+}
+
+@ContextConfiguration
+inheritLocations
+inheritInitializers
+
+Beans within the default profile are only
+included when no other profile is specifically activated.
+This can be used to define fallback beans to be
+used in the application’s default state. 
+
+@Configuration
+@Profile("default")
+public class DefaultDataConfig {
+}
+@Bean
+public DataSource dataSource() {
+return new EmbeddedDatabaseBuilder()
+.setType(EmbeddedDatabaseType.HSQL)
+.addScript("classpath:com/bank/config/sql/schema.sql")
+.build();
+}
+
+
+
+
+
+package com.bank.service;
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {
+TransferServiceConfig.class,
+StandaloneDataConfig.class,
+JndiDataConfig.class,
+DefaultDataConfig.class})
+@ActiveProfiles("dev")
+public class TransferServiceTest {
+@Autowired
+private TransferService transferService;
+}
+@Test
+public void testTransferService() {
+// test the transferService
+}
+
+
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {
+TransferServiceConfig.class,
+StandaloneDataConfig.class,
+JndiDataConfig.class,
+DefaultDataConfig.class})
+@ActiveProfiles("dev")
+public abstract class AbstractIntegrationTest {
+}
+
+
+
+
+// "dev" profile overridden with "production"
+@ActiveProfiles(profiles = "production", inheritProfiles = false)
+public class ProductionTransferServiceTest extends AbstractIntegrationTest {
+// test body
+}
+
+ActiveProfilesResolver
+OperatingSystemActiveProfilesResolver.
+
+
+// "dev" profile overridden programmatically via a custom resolver
+@ActiveProfiles(
+resolver = OperatingSystemActiveProfilesResolver.class,
+inheritProfiles = false)
+public class TransferServiceTest extends AbstractIntegrationTest {
+// test body
+}
+
+
+public class OperatingSystemActiveProfilesResolver implements ActiveProfilesResolver {
+}
+@Override
+String[] resolve(Class<?> testClass) {
+String profile = ...;
+// determine the value of profile based on the operating system
+return new String[] {profile};
+}
+
+Both traditional and XML-based properties file formats are supported — for example, "classpath:/
+com/example/test.properties" or "file:///path/to/file.xml".
+
+Resource location wildcards (e.g. */.properties) are not permitted: each location must evaluate to exactly one
+.properties or .xml resource.
+
+• "key=value"
+• "key:value"
+• "key value"
+@ContextConfiguration
+@TestPropertySource(properties = {"timezone = GMT", "port: 4242"})
+public class MyIntegrationTests {
+// class body...
+}
+
+ @TestPropertySource is declared as an empty annotation 
+com.example.MyTest, the corresponding default properties file is "classpath:com/example/
+MyTest.properties". If the default cannot be detected, an IllegalStateException will be
+thrown.
+
+
+
+@ContextConfiguration
+@TestPropertySource(
+locations = "/test.properties",
+properties = {"timezone = GMT", "port: 4242"}
+)
+public class MyIntegrationTests {
+// class body...
+}
+
+
+@TestPropertySource supports boolean inheritLocations and inheritProperties
+attributes that denote whether resource locations for properties files and inlined properties declared by
+superclasses should be inherited. 
+
+@TestPropertySource(properties = "key1 = value1")
+
+ServletTestExecutionListener
+
+Note that the WebApplicationContext and MockServletContext are
+both cached across the test suite; whereas, the other mocks are managed per test method by the
+ServletTestExecutionListener.
+
+The Spring TestContext framework stores application contexts in a static cache. This means that
+the context is literally stored in a static variable. 
+forkMode for the Maven Surefire plug-in is set to always or pertes
+org.springframework.test.context.cache logging category to DEBUG.
+
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextHierarchy({
+@ContextConfiguration(name = "parent", locations = "/app-config.xml"),
+@ContextConfiguration(name = "child", locations = "/user-config.xml")
+})
+public class BaseTests {}
+@ContextHierarchy(
+@ContextConfiguration(name = "child", locations = "/order-config.xml")
+)
+public class ExtendedTests extends BaseTests {}
+
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextHierarchy({
+@ContextConfiguration(name = "parent", locations = "/app-config.xml"),
+@ContextConfiguration(name = "child", locations = "/user-config.xml")
+})
+public class BaseTests {}
+@ContextHierarchy(
+@ContextConfiguration(
+name = "child",
+locations = "/test-user-config.xml",
+inheritLocations = false
+))
+public class ExtendedTests extends BaseTests {}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
