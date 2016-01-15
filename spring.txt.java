@@ -2870,7 +2870,245 @@ DriverManagerDataSource
 The DriverManagerDataSource class is an implementation of the standard DataSource interface
 that configures a plain JDBC driver through bean properties, and returns a new Connection every time
 
+page 406
 
+TransactionAwareDataSourceProxy
+TransactionAwareDataSourceProxy is a proxy for a target DataSource, which wraps that target
+DataSource to add awareness of Spring-managed transactions
+
+
+DataSourceTransactionManager
+The DataSourceTransactionManager class is a PlatformTransactionManager
+implementation for single JDBC datasources. It binds a JDBC connection from the specified data source
+to the currently executing thread, potentially allowing for one thread connection per data source.
+
+
+DataSourceUtils.getConnection(DataSource)
+Connection
+Statement
+ResultSet 
+JdbcTemplate
+OracleLobHandler
+NativeJdbcExtractor
+
+
+SimpleNativeJdbcExtractor
+C3P0NativeJdbcExtractor
+CommonsDbcpNativeJdbcExtractor
+JBossNativeJdbcExtractor
+WebLogicNativeJdbcExtractor
+WebSphereNativeJdbcExtractor
+XAPoolNativeJdbcExtractor
+
+BatchPreparedStatementSetter
+InterruptibleBatchPreparedStatementSetter
+NamedParameterJdbcTemplate
+SqlParameterSource
+
+public class JdbcActorDao implements ActorDao {
+	private NamedParameterTemplate namedParameterJdbcTemplate;
+	public void setDataSource(DataSource dataSource) {
+		this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+	}
+	public int[] batchUpdate(final List<Actor> actors) {
+		SqlParameterSource[] batch = SqlParameterSourceUtils.createBatch(actors.toArray());
+		int[] updateCounts = namedParameterJdbcTemplate.batchUpdate(
+		"update t_actor set first_name = :firstName, last_name = :lastName where id = :id",
+		batch);
+		return updateCounts;
+	}
+	// ... additional methods
+}
+
+
+
+public class JdbcActorDao implements ActorDao {
+	private JdbcTemplate jdbcTemplate;
+	public void setDataSource(DataSource dataSource) {
+		this.jdbcTemplate = new JdbcTemplate(dataSource);
+	}
+	public int[] batchUpdate(final List<Actor> actors) {
+		List<Object[]> batch = new ArrayList<Object[]>();
+		for (Actor actor : actors) {
+		Object[] values = new Object[] {
+		actor.getFirstName(),
+		actor.getLastName(),
+		actor.getId()};
+		batch.add(values);
+	}
+	int[] updateCounts = jdbcTemplate.batchUpdate(
+		"update t_actor set first_name = ?, last_name = ? where id = ?",
+		batch);
+	return updateCounts;
+	}
+	// ... additional methods
+}
+
+ParameterizedPreparedStatementSetter
+
+SimpleJdbcInsert
+SimpleJdbcCall
+
+
+
+
+public class JdbcActorDao implements ActorDao {
+	private JdbcTemplate jdbcTemplate;
+	private SimpleJdbcInsert insertActor;
+	public void setDataSource(DataSource dataSource) {
+		this.jdbcTemplate = new JdbcTemplate(dataSource);
+		this.insertActor = new SimpleJdbcInsert(dataSource).withTableName("t_actor");
+	}
+	public void add(Actor actor) {
+		Map<String, Object> parameters = new HashMap<String, Object>(3);
+		parameters.put("id", actor.getId());
+		parameters.put("first_name", actor.getFirstName());
+		parameters.put("last_name", actor.getLastName());
+		insertActor.execute(parameters);
+	}
+	// ... additional methods
+}
+
+
+
+public class JdbcActorDao implements ActorDao {
+	private JdbcTemplate jdbcTemplate;
+	private SimpleJdbcInsert insertActor;
+	public void setDataSource(DataSource dataSource) {
+		this.jdbcTemplate = new JdbcTemplate(dataSource);
+		this.insertActor = new SimpleJdbcInsert(dataSource)
+		.withTableName("t_actor")
+		.usingGeneratedKeyColumns("id");
+	}
+	public void add(Actor actor) {
+		Map<String, Object> parameters = new HashMap<String, Object>(2);
+		parameters.put("first_name", actor.getFirstName());
+		parameters.put("last_name", actor.getLastName());
+		Number newId = insertActor.executeAndReturnKey(parameters);
+		actor.setId(newId.longValue());
+	}
+	// ... additional methods
+}
+
+KeyHolder
+
+public class JdbcActorDao implements ActorDao {
+	private JdbcTemplate jdbcTemplate;
+	private SimpleJdbcInsert insertActor;
+	public void setDataSource(DataSource dataSource) {
+		this.jdbcTemplate = new JdbcTemplate(dataSource);
+		this.insertActor = new SimpleJdbcInsert(dataSource)
+		.withTableName("t_actor")
+		.usingColumns("first_name", "last_name")
+		.usingGeneratedKeyColumns("id");
+	}
+	public void add(Actor actor) {
+		Map<String, Object> parameters = new HashMap<String, Object>(2);
+		parameters.put("first_name", actor.getFirstName());
+		parameters.put("last_name", actor.getLastName());
+		Number newId = insertActor.executeAndReturnKey(parameters);
+		actor.setId(newId.longValue());
+	}
+	// ... additional methods
+}
+
+SqlParameterSource
+BeanPropertySqlParameterSource
+
+public class JdbcActorDao implements ActorDao {
+	private JdbcTemplate jdbcTemplate;
+	private SimpleJdbcInsert insertActor;
+	public void setDataSource(DataSource dataSource) {
+		this.jdbcTemplate = new JdbcTemplate(dataSource);
+		this.insertActor = new SimpleJdbcInsert(dataSource)
+		.withTableName("t_actor")
+		.usingGeneratedKeyColumns("id");
+	}
+	public void add(Actor actor) {
+		SqlParameterSource parameters = new BeanPropertySqlParameterSource(actor);
+		Number newId = insertActor.executeAndReturnKey(parameters);
+		actor.setId(newId.longValue());
+	}
+	// ... additional methods
+}
+
+MapSqlParameterSource
+
+public class JdbcActorDao implements ActorDao {
+	private JdbcTemplate jdbcTemplate;
+	private SimpleJdbcInsert insertActor;
+	public void setDataSource(DataSource dataSource) {
+		this.jdbcTemplate = new JdbcTemplate(dataSource);
+		this.insertActor = new SimpleJdbcInsert(dataSource)
+		.withTableName("t_actor")
+		.usingGeneratedKeyColumns("id");
+	}
+	public void add(Actor actor) {
+		SqlParameterSource parameters = new MapSqlParameterSource()
+		.addValue("first_name", actor.getFirstName())
+		.addValue("last_name", actor.getLastName());
+		Number newId = insertActor.executeAndReturnKey(parameters);
+		actor.setId(newId.longValue());
+	}
+	// ... additional methods
+}
+
+
+
+
+
+CREATE PROCEDURE read_actor (
+	IN in_id INTEGER,
+	OUT out_first_name VARCHAR(100),
+	OUT out_last_name VARCHAR(100),
+	OUT out_birth_date DATE)
+BEGIN
+	SELECT first_name, last_name, birth_date
+	INTO out_first_name, out_last_name, out_birth_date
+	FROM t_actor where id = in_id;
+END;
+
+
+
+public class JdbcActorDao implements ActorDao {
+	private JdbcTemplate jdbcTemplate;
+	private SimpleJdbcCall procReadActor;
+	public void setDataSource(DataSource dataSource) {
+		this.jdbcTemplate = new JdbcTemplate(dataSource);
+		this.procReadActor = new SimpleJdbcCall(dataSource)
+		.withProcedureName("read_actor");
+	}
+	public Actor readActor(Long id) {
+		SqlParameterSource in = new MapSqlParameterSource()
+		.addValue("in_id", id);
+		Map out = procReadActor.execute(in);
+		Actor actor = new Actor();
+		actor.setId(id);
+		actor.setFirstName((String) out.get("out_first_name"));
+		actor.setLastName((String) out.get("out_last_name"));
+		actor.setBirthDate((Date) out.get("out_birth_date"));
+		return actor;
+	}
+	// ... additional methods
+}
+
+
+LinkedCaseInsensitiveMap
+setResultsMapCaseInsensitive property to true
+
+
+public class JdbcActorDao implements ActorDao {
+	private SimpleJdbcCall procReadActor;
+	public void setDataSource(DataSource dataSource) {
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+		jdbcTemplate.setResultsMapCaseInsensitive(true);
+		this.procReadActor = new SimpleJdbcCall(jdbcTemplate)
+		.withProcedureName("read_actor");
+	}
+	// ... additional methods
+}
+
+page 415
 
 
 
